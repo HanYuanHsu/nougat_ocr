@@ -107,6 +107,10 @@ async def predict(
     for el in dellist:
         compute_pages.remove(el)
     images = rasterize_paper(pdf, pages=compute_pages)
+
+    # want to see what images look like
+    print(images)
+
     global model
 
     dataset = ImageDataset(
@@ -158,6 +162,10 @@ async def predict(
     final = "".join(predictions).strip()
     (save_path / "doc.mmd").write_text(final, encoding="utf-8")
     return final
+
+@app.post("predict-images")
+async def predict_images():
+    pass
 
 
 def main():
