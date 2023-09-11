@@ -61,7 +61,7 @@ def root():
     """Health check."""
     response = {
         "status-code": HTTPStatus.OK,
-        "data": {},
+        "data": {'Kevin Hsu': 1},
     }
     return response
 
@@ -165,7 +165,11 @@ async def predict(
 
 @app.post("predict-images")
 async def predict_images():
-    pass
+    response = {
+        "status-code": HTTPStatus.OK,
+        "data": {'test-predict-image': 1},
+    }
+    return response
 
 
 def main():
