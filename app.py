@@ -21,6 +21,7 @@ from nougat.utils.dataset import ImageDataset
 from nougat.utils.checkpoint import get_checkpoint
 from nougat.dataset.rasterize import rasterize_paper
 from tqdm import tqdm
+from io import BytesIO
 
 SAVE_DIR = Path("./pdfs")
 BATCHSIZE = os.environ.get("NOUGAT_BATCHSIZE", 6)
@@ -61,7 +62,7 @@ def root():
     """Health check."""
     response = {
         "status-code": HTTPStatus.OK,
-        "data": {'Kevin Hsu': 1},
+        "data": {'Kevin Hsu': 2},
     }
     return response
 
@@ -109,6 +110,7 @@ async def predict(
     images = rasterize_paper(pdf, pages=compute_pages)
 
     # want to see what images look like
+    print('Images below:')
     print(images)
 
     global model
@@ -163,13 +165,46 @@ async def predict(
     (save_path / "doc.mmd").write_text(final, encoding="utf-8")
     return final
 
-@app.post("predict-images")
-async def predict_images():
-    response = {
-        "status-code": HTTPStatus.OK,
-        "data": {'test-predict-image': 1},
-    }
-    return response
+@app.post("/predict-from-image/")
+async def predict_from_image(img: Image) -> str:
+    """
+    Perform predictions on an image consisting of math text and return the extracted text in Markdown format.
+
+    Args:
+        img: A PIL image of type Image
+
+    Returns:
+        str: The extracted text in Markdown format.
+    """
+    
+
+    global model
+
+    # convert the type of img to BytesIO object
+    img = BytesIO(img.tobytes())
+    images = [img]
+
+    dataset = ImageDataset(
+        images,
+        partial(model.encoder.prepare_input, random_padding=False),
+    )
+
+    dataloader = torch.utils.data.DataLoader(
+        dataset,
+        batch_size=BATCHSIZE,
+        pin_memory=True,
+        shuffle=False,
+    )
+
+    result = []
+
+    for idx, sample in tqdm(enumerate(dataloader), total=len(dataloader)):
+        if sample is None:
+            continue
+        model_output = model.inference(image_tensors=sample)
+        result.append(model_output)
+
+    return result
 
 
 def main():

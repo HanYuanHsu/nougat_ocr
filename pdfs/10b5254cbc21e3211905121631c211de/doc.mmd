@@ -1,0 +1,51 @@
+## Chapter 1 Normed Spaces
+
+_There are only two kinds of math books: those you cannot read beyond the first sentence, and those you cannot read beyond the first page._
+
+C. N. Yang
+
+_What we hope ever to do with ease, we must learn first to do with diligence._
+
+Samuel Johnson
+
+We now set off on an expedition through the vast subject of functional analysis. No doubt the reader has some familiarity with this place, and will recognize some of the early landmarks of the journey. Our starting point is the study of _normed spaces_, which are situated at the confluence of two far-reaching mathematical abstractions: vector spaces, and topology.
+
+### 1.1 Basic definitions
+
+The setting is that of a vector space over the real numbers \(\mathbb{R}\). There are a dozen or so axioms that define a vector space (the number depends on how they are phrased), bearing upon the existence and the properties of certain operations called addition and scalar multiplication. It is more than probable that the reader is fully aware of these, and we shall say no more on the matter. We turn instead to the central idea of this chapter.
+
+A **norm** on the vector space \(X\) corresponds to a reasonable way to measure the _size_ of an element, one that is consistent with the vector operations. Given a point \(x\in X\), the norm of \(x\) is a nonnegative number, designated \(\|\,x\,\|\). We also write \(\|\,x\,\|_{X}\) at times, if there is a need to distinguish this norm from others. In order to be a norm, the mapping \(x\mapsto\,\|\,x\,\|\) must possess the following properties:
+
+* \(\|\,x\,\|\,\geqslant\,0\,\,\,\forall x\in X\) ; \(\|\,x\,\|\,=\,0\) if and only if \(x=0\) (_positive definiteness_);
+* \(\|\,x+y\,\|\,\leqslant\,\|\,x\,\|+\|\,y\,\|\,\,\,\forall x,y\in X\) (_the triangle inequality_);
+* \(\|\,tx\,\|\,=\,|\,t\,|\,\|\,x\,\|\,\,\,\forall t\in\mathbb{R}\), \(x\in X\) (_positive homogeneity_).
+
+Once it has been equipped with a norm, the vector space \(X\), or, more precisely perhaps, the pair \((X,\,\|\cdot\|\,)\), is referred to as a **normed space**.
+
+We have implied that vector spaces and topology are to meet in this chapter; where, then, is the topology? The answer lies in the fact that a norm induces a **metric** on \(X\) in a natural way: the distance \(d\) between \(x\) and \(y\) is \(d(x,y)=\|\,x-y\,\|\). Thus, a normed space is endowed with a metric topology, one (and this is a crucial point) which is compatible with the vector space operations.
+
+#### 2.0.1 Some notation.
+
+The closed and open **balls** in \(X\) are (respectively) the sets of the form
+
+\[B(x,r)\,=\,\bigl{\{}\,y\in X\,:\,\|\,y-x\,\|\,\leqslant\,r\,\bigr{\}},\,\,\,B^{ \,\circ}(x,r)\,=\,\bigl{\{}\,y\in X\,:\,\|\,y-x\|<r\,\bigr{\}}\,,\]
+
+where the radius \(r\) is a positive number. We sometimes write \(B\) or \(B_{X}\) for the closed unit ball \(B(0,1)\), and \(B^{\,\circ}\) for the open unit ball \(B^{\,\circ}(0,1)\). A subset of \(X\) is **bounded** if there is a ball that contains it.
+
+If \(A\) and \(C\) are subsets of \(X\) and \(t\) is a scalar (that is, an element of \(\mathbb{R}\)), the sets \(A+C\) and \(tA\) are given by
+
+\[A+C\,=\,\bigl{\{}\,a+c\,:\,a\in A\,,\,c\in C\,\bigr{\}},\quad tA\,=\,\bigl{\{} \,ta\,:\,a\in A\,\bigr{\}}.\]
+
+(Warning: \(A+A\) is different from \(2A\) in general.) Thus, we have \(B\bigl{(}x,r\bigr{)}=\bigl{\{}x\bigr{\}}+r\,B\). We may even ask the reader to tolerate the notation \(B(x,r)=x+r\,B\). The **closure** of \(A\) is denoted \(\mathrm{cl}A\) or \(\overline{A}\), while its **interior** is written \(\mathrm{int}\,A\) or \(A^{\,\circ}\).
+
+Given two points \(x\) and \(y\) in \(X\), the **closed interval** (or segment) \([x,y]\) is defined as follows:
+
+\[[x,y]\,=\,\bigl{\{}\,z\,=\,(1-t)\,x+t\,y\,:\,t\in[0,1]\,\bigr{\}}.\]
+
+When \(t\) is restricted to \((0,1)\) in the definition, we obtain the open interval \((x,y)\). The half-open intervals \([x,y)\) and \((x,y]\) are defined in the evident way, by allowing \(t\) to vary in \([0,1)\) and \((0,1]\) respectively.
+
+The compatibility between the vector space and its norm topology manifests itself by the fact that if \(U\) is an open subset of \(X\), then so is its translate \(x+U\) and its scalar multiple \(tU\) (if \(t\neq 0\)). This follows from the fact that balls, which generate the underlying metric topology, cooperate most courteously with the operations of translation and dilation:
+
+\[B(x,r)\,=\,x+B(0,r)\,,\,\,\,\,B(0,tr)\,=\,t\,B(0,r)\,\,\,(t\,>0)\,.\]
+
+It follows from this, for example, that we have \(\mathrm{int}\,(tA)=t\,\mathrm{int}\,A\) when \(t\neq 0\), and that a sequence \(x_{i}\) converges to a limit \(x\) if and only if the difference \(x_{i}-x\) converges to \(0\). There are topologies on \(X\) that do not respect the vector operations in this way, but they are of no interest to us. We shall have good reasons later on to introduce certain topologies on \(X\) that _differ_ from that of the norm; they too, however, will be compatible with the vector operations.
