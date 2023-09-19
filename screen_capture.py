@@ -2,6 +2,7 @@ import tkinter as tk
 from PIL import ImageGrab, ImageTk, Image
 import requests
 import os
+from io import BytesIO
 
 '''
 BIG PROBLEM: the app won't stay focused.
@@ -117,17 +118,13 @@ class ScreenCaptureApp:
 
             # call nougat OCR API
             cropped_image_bytes = cropped_image.tobytes()
+            files = {
+                'file': ('cropped_image_bytes.png', cropped_image_bytes, 'application/octet-stream')
+            }
             
             response = requests.post(url="http://127.0.0.1:8503/predict-from-image",
-                                     data={"img_bytes": cropped_image_bytes},
-                                     headers={"Content-Type": "application/octet-stream"})
+                                     files=files)
             
-            '''
-            response = requests.post(url="http://127.0.0.1:8503/predict-from-image",
-                                     query = "img_bytes",
-                                     data = cropped_image_bytes,
-                                     headers={"Content-Type": "application/octet-stream"})
-            '''
             if response.status_code == 200:
                 print(response.text)
             else:
