@@ -23,6 +23,8 @@ from nougat.dataset.rasterize import rasterize_paper
 from tqdm import tqdm
 from io import BytesIO
 
+import json
+
 SAVE_DIR = Path("./pdfs")
 BATCHSIZE = os.environ.get("NOUGAT_BATCHSIZE", 6)
 NOUGAT_CHECKPOINT = get_checkpoint()
@@ -166,23 +168,22 @@ async def predict(
     return final
 
 @app.post("/predict-from-image/")
-async def predict_from_image(img: Image) -> str:
+async def predict_from_image(img_bytes: bytes) -> str:
     """
     Perform predictions on an image consisting of math text and return the extracted text in Markdown format.
 
     Args:
-        img: A PIL image of type Image
+        img: A PIL image
 
     Returns:
         str: The extracted text in Markdown format.
     """
-    
 
     global model
 
     # convert the type of img to BytesIO object
-    img = BytesIO(img.tobytes())
-    images = [img]
+    img_bytes = BytesIO(img_bytes)
+    images = [img_bytes]
 
     dataset = ImageDataset(
         images,
@@ -204,7 +205,7 @@ async def predict_from_image(img: Image) -> str:
         model_output = model.inference(image_tensors=sample)
         result.append(model_output)
 
-    return result
+    return json.dumps(result)
 
 
 def main():
