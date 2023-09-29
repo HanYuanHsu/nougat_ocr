@@ -168,12 +168,12 @@ async def predict(
     return final
 
 @app.post("/predict-from-image/")
-async def predict_from_image(file: UploadFile) -> str:
+async def predict_from_image(file: UploadFile):
     """
     Perform predictions on an image consisting of math text and return the extracted text in Markdown format.
 
     Args:
-        img: A PIL image
+        file
 
     Returns:
         str: The extracted text in Markdown format.
@@ -183,15 +183,7 @@ async def predict_from_image(file: UploadFile) -> str:
 
     # read the file
     img = file.file.read()
-    print("type of img:")
-    print(type(img))
-    print("img:")
-    print(img)
-
-    '''
-    # convert the type of img to BytesIO object
-    img_bytes = BytesIO(img_bytes)
-    images = [img_bytes]
+    images = [BytesIO(img)]
 
     dataset = ImageDataset(
         images,
@@ -214,7 +206,6 @@ async def predict_from_image(file: UploadFile) -> str:
         result.append(model_output)
 
     return json.dumps(result)
-    '''
 
 def main():
     import uvicorn
