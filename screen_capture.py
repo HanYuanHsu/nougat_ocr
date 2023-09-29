@@ -4,6 +4,8 @@ import requests
 import os
 from io import BytesIO
 
+from predict_from_image import load_model, predict_from_image
+
 '''
 BIG PROBLEM: the app won't stay focused.
 Potential solution: when you press F11 key, make the tkinter app back to focus again and show the full-screen image to do cropping
@@ -116,19 +118,42 @@ class ScreenCaptureApp:
             # save the cropped image
             cropped_image.save(os.path.join("images", "captured_screen.png"))
 
-            # call nougat OCR API
-            cropped_image_bytes = cropped_image.tobytes()
-            files = {
-                'file': ('cropped_image_bytes.png', cropped_image_bytes, 'application/octet-stream')
-            }
+            print(predict_from_image(cropped_image))
+
+            '''
+            got this error:
+
+            Exception in Tkinter callback
+Traceback (most recent call last):
+  File "C:\Users\a0306\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py", line 1948, in __call__
+    return self.func(*args)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\a0306\Mathweb\nougat_ocr\screen_capture.py", line 151, in y_handler
+    self.handle_selected_region(event)
+  File "C:\Users\a0306\Mathweb\nougat_ocr\screen_capture.py", line 121, in handle_selected_region
+    print(predict_from_image(cropped_image))
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\a0306\Mathweb\nougat_ocr\predict_from_image.py", line 62, in predict_from_image
+    for idx, sample in tqdm(enumerate(dataloader), total=len(dataloader)):
+  File "C:\Users\a0306\AppData\Local\Programs\Python\Python311\Lib\site-packages\tqdm\std.py", line 1195, in __iter__
+    for obj in iterable:
+  File "C:\Users\a0306\AppData\Local\Programs\Python\Python311\Lib\site-packages\torch\utils\data\dataloader.py", line 633, in __next__
+    data = self._next_data()
+           ^^^^^^^^^^^^^^^^^
+  File "C:\Users\a0306\AppData\Local\Programs\Python\Python311\Lib\site-packages\torch\utils\data\dataloader.py", line 677, in _next_data
+    data = self._dataset_fetcher.fetch(index)  # may raise StopIteration
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\a0306\AppData\Local\Programs\Python\Python311\Lib\site-packages\torch\utils\data\_utils\fetch.py", line 54, in fetch
+    return self.collate_fn(data)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\a0306\AppData\Local\Programs\Python\Python311\Lib\site-packages\torch\utils\data\_utils\collate.py", line 265, in default_collate
+    return collate(batch, collate_fn_map=default_collate_fn_map)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\a0306\AppData\Local\Programs\Python\Python311\Lib\site-packages\torch\utils\data\_utils\collate.py", line 150, in collate
+    raise TypeError(default_collate_err_msg_format.format(elem_type))
+TypeError: default_collate: batch must contain tensors, numpy arrays, numbers, dicts or lists; found <class 'NoneType'>
             
-            response = requests.post(url="http://127.0.0.1:8503/predict-from-image",
-                                     files=files)
-            
-            if response.status_code == 200:
-                print(response.text)
-            else:
-                raise Exception(f"Error {response.status_code}: {response.text}")
+            '''
 
 
     def get_corrected_coordinates(self, coord: list[float]):
@@ -160,13 +185,14 @@ class ScreenCaptureApp:
         # handles events after pressing y key
         self.handle_selected_region(event)
         self.to_initial_mode()
+    
 
+if __name__ == '__main__':
+    # loads OCR model
+    load_model()    
 
-def main():
+    # start tkinter screen capture app
     root = tk.Tk()
     app = ScreenCaptureApp(root)
     root.mainloop()
-
-if __name__ == '__main__':
-    main()
 
