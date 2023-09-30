@@ -116,44 +116,22 @@ class ScreenCaptureApp:
             cropped_image = self.full_screen_image.crop(bbox)
 
             # save the cropped image
-            cropped_image.save(os.path.join("images", "captured_screen.png"))
+            saved_image_path = os.path.join("images", "captured_screen.png")
+            cropped_image.save(saved_image_path)
 
-            print(predict_from_image(cropped_image))
-
-            '''
-            got this error:
-
-            Exception in Tkinter callback
-Traceback (most recent call last):
-  File "C:\Users\a0306\AppData\Local\Programs\Python\Python311\Lib\tkinter\__init__.py", line 1948, in __call__
-    return self.func(*args)
-           ^^^^^^^^^^^^^^^^
-  File "C:\Users\a0306\Mathweb\nougat_ocr\screen_capture.py", line 151, in y_handler
-    self.handle_selected_region(event)
-  File "C:\Users\a0306\Mathweb\nougat_ocr\screen_capture.py", line 121, in handle_selected_region
-    print(predict_from_image(cropped_image))
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\a0306\Mathweb\nougat_ocr\predict_from_image.py", line 62, in predict_from_image
-    for idx, sample in tqdm(enumerate(dataloader), total=len(dataloader)):
-  File "C:\Users\a0306\AppData\Local\Programs\Python\Python311\Lib\site-packages\tqdm\std.py", line 1195, in __iter__
-    for obj in iterable:
-  File "C:\Users\a0306\AppData\Local\Programs\Python\Python311\Lib\site-packages\torch\utils\data\dataloader.py", line 633, in __next__
-    data = self._next_data()
-           ^^^^^^^^^^^^^^^^^
-  File "C:\Users\a0306\AppData\Local\Programs\Python\Python311\Lib\site-packages\torch\utils\data\dataloader.py", line 677, in _next_data
-    data = self._dataset_fetcher.fetch(index)  # may raise StopIteration
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\a0306\AppData\Local\Programs\Python\Python311\Lib\site-packages\torch\utils\data\_utils\fetch.py", line 54, in fetch
-    return self.collate_fn(data)
-           ^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\a0306\AppData\Local\Programs\Python\Python311\Lib\site-packages\torch\utils\data\_utils\collate.py", line 265, in default_collate
-    return collate(batch, collate_fn_map=default_collate_fn_map)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "C:\Users\a0306\AppData\Local\Programs\Python\Python311\Lib\site-packages\torch\utils\data\_utils\collate.py", line 150, in collate
-    raise TypeError(default_collate_err_msg_format.format(elem_type))
-TypeError: default_collate: batch must contain tensors, numpy arrays, numbers, dicts or lists; found <class 'NoneType'>
-            
-            '''
+            # call ocr API
+            api_url = 'http://127.0.0.1:8503/predict-from-image'
+            headers = {
+                'accept': 'application/json',
+            }
+            files = {
+                'file': ('captured_screen.png', open(saved_image_path, 'rb'), 'image/png'),
+            }
+            response = requests.post(api_url, headers=headers, files=files) # add await?
+            # this is blocking the code... nothing else can be done before this line is done
+            # this line takes 16 seconds
+            print("Here is the transformed region in markdown text:")
+            print(response.text)
 
 
     def get_corrected_coordinates(self, coord: list[float]):

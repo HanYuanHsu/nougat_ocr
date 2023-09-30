@@ -173,7 +173,7 @@ async def predict_from_image(file: UploadFile):
     Perform predictions on an image consisting of math text and return the extracted text in Markdown format.
 
     Args:
-        file
+        file: png file. For the HTTP request format, see api_teset.py
 
     Returns:
         str: The extracted text in Markdown format.
@@ -197,15 +197,42 @@ async def predict_from_image(file: UploadFile):
         shuffle=False,
     )
 
-    result = []
+    result = ""
 
     for idx, sample in tqdm(enumerate(dataloader), total=len(dataloader)):
         if sample is None:
             continue
         model_output = model.inference(image_tensors=sample)
-        result.append(model_output)
+        for j, output in enumerate(model_output["predictions"]):
+            if model_output["repeats"][j] is not None:
+                if model_output["repeats"][j] > 0:
+                    disclaimer = "\n\n+++ ==WARNING: Truncated because of repetitions==\n%s\n+++\n\n"
+                else:
+                    disclaimer = (
+                        "\n\n+++ ==ERROR: No output for this page==\n%s\n+++\n\n"
+                    )
+                rest = close_envs(model_output["repetitions"][j]).strip()
+                if len(rest) > 0:
+                    disclaimer = disclaimer % rest
+                else:
+                    disclaimer = ""
+            else:
+                disclaimer = ""
 
-    return json.dumps(result)
+            result += (markdown_compatible(output) + disclaimer)
+
+    return result.strip()
+
+@app.get("/predict-from-image/")
+async def predict_from_image():
+    """
+    Perform predictions on the png file `images/captured_screen.png` and return the extracted text in Markdown format.
+
+    Returns:
+        str: The extracted text in Markdown format.
+    """
+    pass
+
 
 def main():
     import uvicorn
